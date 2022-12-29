@@ -1,0 +1,111 @@
+<html>
+    <head>
+        <title>Treppe</title>
+        <link rel="favicon" href="">
+        <style>
+            body{
+                background-color: #222222;
+                background: linear-gradient(to right, #333333, #222222);
+                color: white;
+                font-family: Arial;
+                text-align: center;
+            }
+            h1{
+                color: #ffbb66;
+            }
+            h2{
+                color: #aaaaaa;
+                font-weight: lighter;
+            }
+            .button1 {
+                height: 45px;
+                margin-right: 10px;
+                padding-left: 25px;
+                padding-right: 25px;
+                
+                cursor: pointer;
+
+                visibility: hidden;
+
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                left: 20px;
+
+                float: left;
+                color: white;
+                font-family: "Helvetica";
+                font-size: 15px;
+                text-decoration: none;
+                text-align: center;
+                line-height: 45px;
+                
+                background: #228822;
+                border: 1px solid black;
+                border-radius: 10px;
+                
+                transition: all 0.2s;
+            }
+            .button1:hover {
+                background: #11cc33;
+                text-decoration: none;
+            }
+        </style>
+    </head>
+    <body>
+        <a id="name" style="visibility: hidden; font-size: 0px;">{{name}}</a>
+        <h2 id="status"></h2>
+        <h1 id="countdown"></h1>
+        <h2 id="status2"></h2>
+        <div class="button1" onclick="resMe();" id="resbtn">Reservieren</div>
+        <script>
+            var name = document.getElementById("name").innerHTML;
+            document.getElementById("name").innerHTML = "";
+            document.getElementById("name").remove();
+
+            function loadSta() {
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        var respDec = JSON.parse(this.responseText);
+                        var restsec = respDec["restsec"];
+                        var resname = respDec["name"];
+
+                        if(restsec > 0){
+                            document.getElementById("status").innerHTML = (resname + " hat die Treppe für");
+                            document.getElementById("countdown").innerHTML = restsec;
+                            document.getElementById("status2").innerHTML = "Sekunden reserviert.";
+                            document.getElementById("resbtn").style.visibility = "hidden";
+                        } else {
+                            document.getElementById("status").innerHTML = "Die Treppe ist";
+                            document.getElementById("countdown").innerHTML = "Frei.";
+                            document.getElementById("status2").innerHTML = "";
+                            document.getElementById("resbtn").style.visibility = "visible";
+                        }
+                    }
+                };
+                xhttp.open("GET", "/treppe/sta", true);
+                xhttp.send();
+            }
+
+            function resMe() {
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        loadSta();
+                    }
+                };
+                xhttp.open("GET", ("/treppe/res/" + name), true);
+                xhttp.send();
+            }
+
+            function update(){
+                loadSta();
+                setTimeout(function(){ update(); }, 1000);
+            }
+
+            setTimeout(function(){ update(); }, 1000);
+            loadSta();
+        </script>
+    </body>
+</html>
