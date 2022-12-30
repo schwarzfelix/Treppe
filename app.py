@@ -2,9 +2,12 @@ from flask import *
 from datetime import datetime, date
 import time
 from threading import Thread
+import logging
 
 resname = ""
 restsec = 0
+
+logging.basicConfig(filename='app.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
 def sleeper():
     time.sleep(1)
@@ -30,6 +33,7 @@ def res(name):
     global resname
     global restsec
     if restsec <= 0:
+        logging.warning("Reservierung von " + name + " um " + str(datetime.now()))
         resname = name
         restsec = 20
         t = Thread(target=sleeper)
